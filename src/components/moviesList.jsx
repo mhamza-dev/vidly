@@ -12,6 +12,7 @@ export default class MoviesList extends Component {
     genres: [],
     pageSize: 4,
     currentPage: 1,
+    selectedGenre: "",
   };
 
   componentDidMount() {
@@ -33,12 +34,7 @@ export default class MoviesList extends Component {
   };
 
   handleFilterGenre = (genre) => {
-    const movies = [...this.state.movies];
-    const filteredMovies =
-      genre == "all"
-        ? movies
-        : movies.filter((m) => m.genre.name == genre.name);
-    this.setState({ movies: filteredMovies });
+    this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
   handlePageChange = (page) => {
@@ -47,8 +43,22 @@ export default class MoviesList extends Component {
 
   render() {
     const { length: count } = this.state.movies;
-    const { pageSize, currentPage, movies: allMovies, genres } = this.state;
-    const movies = paginate(allMovies, currentPage, pageSize);
+    const {
+      pageSize,
+      currentPage,
+      movies: allMovies,
+      genres,
+      selectedGenre,
+    } = this.state;
+
+    const allGenres = [{ _id: "", name: "All Genres" }, ...genres];
+
+    const filteredMovies =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+        : allMovies;
+
+    const movies = paginate(filteredMovies, currentPage, pageSize);
     if (count === 0) {
       return (
         <React.Fragment>
@@ -61,7 +71,11 @@ export default class MoviesList extends Component {
         <h1>Showing {count} movies in database</h1>
         <div className="row">
           <div className="col-2">
-            <ListGroup genres={genres} onClick={this.handleFilterGenre} />
+            <ListGroup
+              items={allGenres}
+              valueProperty={"name"}
+              onClick={this.handleFilterGenre}
+            />
           </div>
           <div className="col">
             <MoviesTable

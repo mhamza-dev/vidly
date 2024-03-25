@@ -2,24 +2,18 @@ import React, { Component } from "react";
 
 class ListGroup extends Component {
   render() {
-    const { genres, onClick } = this.props;
+    const { items, onClick, valueProperty } = this.props;
     return (
       <React.Fragment>
-        <ul class="list-group">
-          <li
-            class="list-group-item"
-            onClick={() => onClick("all")}
-            style={{ cursor: "pointer" }}
-          >
-            All Genre
-          </li>
-          {genres.map((genre) => (
+        <ul className="list-group">
+          {items.map((item) => (
             <li
-              class="list-group-item"
-              onClick={() => onClick(genre)}
+              key={item[valueProperty]}
+              className="list-group-item"
+              onClick={() => onClick(item)}
               style={{ cursor: "pointer" }}
             >
-              {genre.name}
+              {item[valueProperty]}
             </li>
           ))}
         </ul>
