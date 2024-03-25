@@ -5,6 +5,7 @@ import ListGroup from "../components/common/listGroup";
 import Pagination from "../components/common/pagination";
 import { paginate } from "../utils/paginate";
 import MoviesTable from "./common/moviesTable";
+import _ from "lodash"
 
 export default class MoviesList extends Component {
   state = {
@@ -13,6 +14,7 @@ export default class MoviesList extends Component {
     pageSize: 4,
     currentPage: 1,
     selectedGenre: "",
+    sortColumn: { path: "title", order: "asc" },
   };
 
   componentDidMount() {
@@ -33,12 +35,16 @@ export default class MoviesList extends Component {
     this.setState({ movies: movies });
   };
 
+  handlePageChange = (page) => {
+    this.setState({ currentPage: page });
+  };
+
   handleFilterGenre = (genre) => {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
-  handlePageChange = (page) => {
-    this.setState({ currentPage: page });
+  handleOnSort = (sortColumn) => {
+    this.setState({ sortColumn: sortColumn});
   };
 
   render() {
@@ -49,6 +55,7 @@ export default class MoviesList extends Component {
       movies: allMovies,
       genres,
       selectedGenre,
+      sortColumn,
     } = this.state;
 
     const allGenres = [{ _id: "", name: "All Genres" }, ...genres];
@@ -58,7 +65,13 @@ export default class MoviesList extends Component {
         ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
         : allMovies;
 
-    const movies = paginate(filteredMovies, currentPage, pageSize);
+    const sortedMovies = _.orderBy(
+      filteredMovies,
+      [sortColumn.path],
+      [sortColumn.order]
+    );
+
+    const movies = paginate(sortedMovies, currentPage, pageSize);
     if (count === 0) {
       return (
         <React.Fragment>
@@ -80,6 +93,8 @@ export default class MoviesList extends Component {
           <div className="col">
             <MoviesTable
               movies={movies}
+              sortColumn={sortColumn}
+              onSort={this.handleOnSort}
               onDelete={this.handleDelete}
               onLiked={this.handleLiked}
             />
