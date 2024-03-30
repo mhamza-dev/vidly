@@ -18,11 +18,13 @@ export default class MoviesList extends Component {
   };
 
   componentDidMount() {
-    this.setState({ movies: getMovies(), genres: getGenres() });
+    this.setState({
+      movies: getMovies(),
+      genres: getGenres()
+    });
   }
 
   handleDelete = (movie) => {
-    console.log(movie);
     const movies = this.state.movies.filter((m) => m._id != movie._id);
     this.setState({ movies: movies });
   };
@@ -93,7 +95,7 @@ export default class MoviesList extends Component {
           <div className="col">
             <MoviesTable
               movies={movies}
-              sortColumn={sortColumn}
+              sortedColumn={sortColumn}
               onSort={this.handleOnSort}
               onDelete={this.handleDelete}
               onLiked={this.handleLiked}
